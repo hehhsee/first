@@ -3,7 +3,7 @@
 
 bool IMU::begin(uint8_t sda_pin, uint8_t scl_pin) {
     Wire.begin(sda_pin, scl_pin);
-    if (!mpu.begin(0x70, &Wire)) { // 默认I2C地址0x68  //购买国产 id 0x70
+    if (!mpu.begin(0x68, &Wire)) { // 默认I2C地址0x68  //购买国产 id 0x70
         return false;
     }
     
