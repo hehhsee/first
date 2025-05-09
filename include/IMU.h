@@ -6,6 +6,7 @@
 class IMU {
 public:
    void begin(uint8_t sda, uint8_t scl); // 确保声明正确
+   //带我去
 };
 
 #endif

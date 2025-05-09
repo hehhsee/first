@@ -7,7 +7,7 @@ class MotorDriver {
 public:
     void begin(const uint8_t* pins, uint32_t freq = 20000, uint8_t resolution = 8);
     void setSpeed(uint8_t motor_index, uint8_t speed);
-    void setAllSpeed(uint8_t speed); // 确保声明存在
+    void setAllSpeed(uint8_t speed); // 确保声明存
     void emergencyStop();
 
 private:
