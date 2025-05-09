@@ -6,22 +6,22 @@
 
 class IMU {
 public:
-    struct IMUData {
-        float accelX, accelY, accelZ;
-        float gyroX, gyroY, gyroZ;
-        float pitch, roll;
+    struct Data {
+        float accel[3];  // x,y,z (m/s²)
+        float gyro[3];    // x,y,z (rad/s)
+        float pitch;      // 俯仰角
+        float roll;       // 横滚角
     };
 
-    bool begin(uint8_t sda_pin = 21, uint8_t scl_pin = 22);
+    bool init(uint8_t sda_pin = 21, uint8_t scl_pin = 22);
     bool update();
-    const IMUData& getData() const;
+    const Data& data() const { return _data; }
 
 private:
-    Adafruit_MPU6050 mpu;
-    IMUData currentData;
-    unsigned long lastUpdate = 0;
-    
-    void calculateAngles();
-};
+    Adafruit_MPU6050 _mpu;
+    Data _data;
+    uint32_t _last_update = 0;
 
+    void _calculate_angles();
+};
 #endif
