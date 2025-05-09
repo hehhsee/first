@@ -13,14 +13,23 @@ void setup() {
     //初始化串口
     Serial.begin(115200);
     delay(1000);
+    
+    // 初始化电机驱动
     motorController.begin(motorPins); // 使用默认20kHz频率
+    Serial.println("电机驱动初始化完成");
 
-    imu.begin(21,22);
+    // 初始化IMU
+    if (!imu.begin()) {
+        Serial.println("MPU6050初始化失败!");
+        while(1);
+    }
+    Serial.println("MPU6050初始化成功");
+
+
 
     Serial.println("系统就绪");
-    // 初始化电机驱动
+
     
-    // 其他初始化...
 }
 
 void loop() {
