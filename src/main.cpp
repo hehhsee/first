@@ -36,5 +36,6 @@ void loop() {
                      imu.data().pitch, imu.data().roll);
 
   delay(1000); // 延时0.5秒
-  motorController.setAllSpeed(255); // 设置所有电机速度为255
+  motorController.setAllSpeed(100); // 设置所有电机速度为255
+  
 }

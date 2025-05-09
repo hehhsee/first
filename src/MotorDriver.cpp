@@ -17,6 +17,7 @@ void MotorDriver::begin(const uint8_t* pins, uint32_t freq, uint8_t resolution) 
 
 void MotorDriver::setSpeed(uint8_t motor_index, uint8_t speed) {
     // 单电机控制代码...
+    ledcWrite(motor_index, speed);
 }
 
 // 确保实现 setAllSpeed
