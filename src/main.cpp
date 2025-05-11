@@ -1,41 +1,52 @@
-
 #include <Arduino.h>
 #include "MotorDriver.h"
 #include "IMU.h"
+#include <BluetoothSerial.h>
 
-// 电机控制引脚定义
-const uint8_t motorPins[] = {12, 13, 14, 15};
-Adafruit_MPU6050 mpu;
-// 创建电机驱动实例
-MotorDriver motorController;
+// 硬件配置
+const uint8_t MOTOR_PINS[] = {12, 13, 14, 15};
+MotorDriver motors;
 IMU imu;
+BluetoothSerial SerialBT;
+
+// 电机速度变量
+uint8_t motor_speed = 0;
+
 void setup() {
-    //初始化串口
     Serial.begin(115200);
     delay(1000);
-    // 初始化电机驱动
-    motorController.begin(motorPins); // 使用默认20kHz频率
-    Serial.println("电机驱动初始化完成");
 
-    // 初始化IMU
-    if (!imu.init()) {
-        Serial.println("MPU6050初始化失败!");
+    motors.begin(MOTOR_PINS);
+    if(!imu.init()) {
+        Serial.println("IMU初始化失败!");
         while(1);
     }
-    Serial.println("MPU6050初始化成功");
-    Serial.println("系统就绪");
 
-    
+    Serial.println("串口控制已启动，请输入速度值(0~255)：");
 }
 
 void loop() {
+    // 通过串口控制电机速度
+    if (Serial.available()) {
+        String cmd = Serial.readStringUntil('\n');
+        int speed = cmd.toInt();
+        if (speed >= 0 && speed <= 255) {
+            motor_speed = speed;
+            motors.set_all_speed(motor_speed);
+            Serial.print("已设置电机速度为: ");
+            Serial.println(motor_speed);
+        } else {
+            Serial.println("请输入0~255之间的速度值");
+        }
+    }
 
-  imu.update(); // 更新IMU数据
-
- Serial.printf("俯仰角: %.2f°\t横滚角: %.2f°\n", 
-                     imu.data().pitch, imu.data().roll);
-
-  delay(1000); // 延时0.5秒
-  motorController.setAllSpeed(100); // 设置所有电机速度为255
-  
+    // 读取IMU数据
+    //if(imu.update()) {
+    //    const auto& data = imu.data();
+    //    Serial.print("Pitch: ");
+     //   Serial.print(data.pitch);
+     //   Serial.print("  Roll: ");
+     //   Serial.print(data.roll);
+    //    Serial.println();
+   // }
 }

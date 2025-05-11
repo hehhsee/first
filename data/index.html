@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Motor Control</title>
+    <style>
+        .control-box { padding: 20px; text-align: center; }
+        .joystick { width: 200px; height: 200px; background: #eee; 
+                   border-radius: 50%; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <div class="control-box">
+        <h1>ESP32 Motor Control</h1>
+        <p>IP: %IP%</p>
+        <div class="joystick" id="joystick"></div>
+        <input type="range" min="0" max="255" id="speed" 
+              oninput="sendSpeed(this.value)">
+        <p>Speed: <span id="speedValue">0</span></p>
+        <p>Pitch: <span id="pitch">0.00</span>°</p>
+        <p>Roll: <span id="roll">0.00</span>°</p>
+    </div>
+
+    <script>
+        const ws = new WebSocket(`ws://${location.host}/ws`);
+        
+        // 发送速度指令
+        function sendSpeed(val) {
+            document.getElementById("speedValue").textContent = val;
+            ws.send(`SPEED:${val}`);
+        }
+
+        // 接收姿态数据
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            document.getElementById("pitch").textContent = data.pitch.toFixed(2);
+            document.getElementById("roll").textContent = data.roll.toFixed(2);
+        };
+
+        // 虚拟摇杆（需要引入第三方库）
+        const joystick = new VirtualJoystick({
+            container: document.getElementById("joystick"),
+            mouseSupport: true
+        });
+
+        setInterval(() => {
+            const x = joystick.deltaX();
+            const y = joystick.deltaY();
+            ws.send(`CTRL:${x},${y}`);
+        }, 100);
+    </script>
+</body>
+</html>
