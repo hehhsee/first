@@ -6,9 +6,9 @@ bool IMU::init(uint8_t sda_pin, uint8_t scl_pin) {
     Wire.begin(sda_pin, scl_pin);
     Wire.setClock(400000); // 400kHz I2C
     
-    if(!_mpu.begin(MPU6050_I2CADDR_DEFAULT, &Wire)){
-        return false;
-    }
+    // if(!_mpu.begin(MPU6050_I2CADDR_DEFAULT, &Wire)){
+    //     return false;
+    // }
 
     _mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
     _mpu.setGyroRange(MPU6050_RANGE_500_DEG);

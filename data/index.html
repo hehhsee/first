@@ -1,52 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ESP32 Motor Control</title>
+    <meta charset="utf-8">
+    <title>ESP32 电机速度控制</title>
     <style>
-        .control-box { padding: 20px; text-align: center; }
-        .joystick { width: 200px; height: 200px; background: #eee; 
-                   border-radius: 50%; margin: 20px auto; }
+        body { font-size: 2em; text-align: center; }
+        button { font-size: 1.5em; margin: 10px 20px; padding: 10px 30px; }
+        #speedValue { font-weight: bold; color: #0078D7; }
     </style>
 </head>
 <body>
-    <div class="control-box">
-        <h1>ESP32 Motor Control</h1>
-        <p>IP: %IP%</p>
-        <div class="joystick" id="joystick"></div>
-        <input type="range" min="0" max="255" id="speed" 
-              oninput="sendSpeed(this.value)">
-        <p>Speed: <span id="speedValue">0</span></p>
-        <p>Pitch: <span id="pitch">0.00</span>°</p>
-        <p>Roll: <span id="roll">0.00</span>°</p>
-    </div>
-
+    <h1>ESP32 电机速度控制</h1>
+    <button onclick="changeSpeed(1)">速度+</button>
+    <button onclick="changeSpeed(-1)">速度-</button>
+    <p>当前速度: <span id="speedValue">0</span></p>
     <script>
-        const ws = new WebSocket(`ws://${location.host}/ws`);
-        
-        // 发送速度指令
-        function sendSpeed(val) {
+        let speed = 0;
+        function updateSpeed(val) {
             document.getElementById("speedValue").textContent = val;
-            ws.send(`SPEED:${val}`);
         }
-
-        // 接收姿态数据
-        ws.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            document.getElementById("pitch").textContent = data.pitch.toFixed(2);
-            document.getElementById("roll").textContent = data.roll.toFixed(2);
-        };
-
-        // 虚拟摇杆（需要引入第三方库）
-        const joystick = new VirtualJoystick({
-            container: document.getElementById("joystick"),
-            mouseSupport: true
+        function changeSpeed(delta) {
+            let newSpeed = speed + delta;
+            if (newSpeed < 0) newSpeed = 0;
+            if (newSpeed > 255) newSpeed = 255;
+            fetch(`/set?speed=${newSpeed}`)
+                .then(response => response.text())
+                .then(() => {
+                    speed = newSpeed;
+                    updateSpeed(speed);
+                });
+        }
+        // 页面加载时获取当前速度
+        fetch('/getspeed').then(r=>r.json()).then(data=>{
+            speed = data.speed || 0;
+            updateSpeed(speed);
         });
-
-        setInterval(() => {
-            const x = joystick.deltaX();
-            const y = joystick.deltaY();
-            ws.send(`CTRL:${x},${y}`);
-        }, 100);
     </script>
 </body>
 </html>

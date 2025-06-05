@@ -1,17 +1,16 @@
 #include "MotorDriver.h"
 #include <Arduino.h>
 
-uint8_t MotorDriver::_channel_counter = 0;
 
-void MotorDriver::begin(const uint8_t pins[4], uint32_t freq, uint8_t resolution) {
+void MotorDriver::begin(const uint8_t pins[4], const uint8_t Channels[4], uint32_t freq , uint8_t resolution ) {
     for(uint8_t i=0; i<4; i++){
         _pins[i] = pins[i];
-        _channels[i] = _channel_counter++;
+        _channels[i] = Channels[i];
         ledcSetup(_channels[i], freq, resolution);
         ledcAttachPin(_pins[i], _channels[i]);
     }
     _resolution = resolution;
-    emergency_stop();
+ //   emergency_stop();
 }
 
 void MotorDriver::set_speed(uint8_t motor_index, uint8_t speed) {
@@ -28,6 +27,6 @@ void MotorDriver::set_all_speed(uint8_t speed) {
 }
 
 void MotorDriver::emergency_stop() {
-    memset(_channels, 0, sizeof(_channels)); // 快速清零
+   // memset(_channels, 0, sizeof(_channels)); // 快速清零
     set_all_speed(0);
 }
